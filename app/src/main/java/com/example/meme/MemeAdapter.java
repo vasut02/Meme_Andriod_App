@@ -19,6 +19,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+
 import java.io.InputStream;
 
 import java.util.ArrayList;
@@ -92,40 +94,49 @@ public class MemeAdapter extends ArrayAdapter<Meme> {
         ImageView meme_image = listItemView.findViewById(R.id.MemeImage);
         String meme_url = current_meme.getmMeme_Url();
 
-        DownloadImageTask Image_Download = new DownloadImageTask(meme_image);
-        Image_Download.execute(meme_url);
+        //using Glide Library
+        Glide.with(context)
+                .asBitmap()
+                .skipMemoryCache(true)
+                .load(meme_url)
+                .thumbnail(0.05f)
+                .placeholder(R.drawable.insta_loader)
+                .into(meme_image);
+
+//        DownloadImageTask Image_Download = new DownloadImageTask(meme_image);
+//        Image_Download.execute(meme_url);
 
 
         return listItemView;
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-
-            bmImage.setImageBitmap(result);
-
-
-        }
-    }
+//    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+//        ImageView bmImage;
+//
+//        public DownloadImageTask(ImageView bmImage) {
+//            this.bmImage = bmImage;
+//
+//        }
+//
+//        protected Bitmap doInBackground(String... urls) {
+//            String urldisplay = urls[0];
+//            Bitmap mIcon11 = null;
+//            try {
+//                InputStream in = new java.net.URL(urldisplay).openStream();
+//                mIcon11 = BitmapFactory.decodeStream(in);
+//            } catch (Exception e) {
+//                Log.e("Error", e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return mIcon11;
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//
+//            bmImage.setImageBitmap(result);
+//
+//
+//        }
+//    }
 
 }
