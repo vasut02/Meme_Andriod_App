@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/MemeImage"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.342"
+        app:srcCompat="@drawable/insta_loader" />
+
+    <ImageView
+        android:id="@+id/Like_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:forceDarkAllowed="false"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MemeImage"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/outline_favorite_border_black_24" />
+
+    <ImageView
+        android:id="@+id/Share_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toEndOf="@+id/Like_Button"
+        app:layout_constraintTop_toBottomOf="@+id/MemeImage"
+        app:srcCompat="@drawable/outline_share_black_24" />
+
+    <ImageView
+        android:id="@+id/postlink_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toEndOf="@+id/Share_Button"
+        app:layout_constraintTop_toBottomOf="@+id/MemeImage"
+        app:srcCompat="@drawable/outline_call_made_black_24" />
+
+    <ImageView
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MemeImage"
+        app:srcCompat="@drawable/outline_turned_in_not_black_24" />
+
+    <TextView
+        android:id="@+id/subreddit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:paddingBottom="16dp"
+        android:text="Meme "
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/likes_no" />
+
+    <TextView
+        android:id="@+id/subreddit0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:forceDarkAllowed="true"
+        android:text="Meme"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@+id/MemeImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/likes_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="6,969 Likes"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Like_Button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
