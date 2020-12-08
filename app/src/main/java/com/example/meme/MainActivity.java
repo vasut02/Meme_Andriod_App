@@ -44,20 +44,38 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
      */
     private MemeAdapter mAdapter;
 
+    private MemeRecyclerAdapter adapter;
     private ArrayList<Meme> MemeData;
 
+    private String JSONString ;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.recycler_view_file);
 
         //Code For Version 2
         StringRequest memeRequest = new StringRequest(MEME_REQUEST_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Volley response " , response);
+                JSONString = response;
 
-                MemeData = extractFeatureFromJson(response);
+                // get data  form JSON in ArrayList
+                MemeData = extractFeatureFromJson(JSONString);
+
+                //find recycler view
+                RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view );
+
+                //initiate adapter
+                adapter = new MemeRecyclerAdapter(MainActivity.this , MemeData);
+
+                recyclerView.setHasFixedSize(true);
+
+                // Layout Manager
+                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+                // Attach Adapter
+                recyclerView.setAdapter(adapter);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -66,32 +84,34 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             }
         });
 
+
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(memeRequest);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view );
-        MemeRecyclerAdapter adapter = new MemeRecyclerAdapter(this , new ArrayList<Meme>());
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
+//        ArrayList<Meme> MemeData = extractFeatureFromJson(JSONString);
+//        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view );
+//        MemeRecyclerAdapter adapter = new MemeRecyclerAdapter(this , MemeData);
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.setAdapter(adapter);
 
-        // Find a reference to the {@link ListView} in the layout
-        ListView MemeListView = (ListView) findViewById(R.id.list);
-
-        // Create a new adapter that takes an empty list of earthquakes as input
-        mAdapter = new MemeAdapter(this, new ArrayList<Meme>());
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        MemeListView.setAdapter(mAdapter);
-
-        // Get a reference to the LoaderManager, in order to interact with loaders.
-        LoaderManager loaderManager = getLoaderManager();
-
-        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-        // because this activity implements the LoaderCallbacks interface).
-        loaderManager.initLoader(MEME_LOADER_ID, null, this);
+//        // Find a reference to the {@link ListView} in the layout
+//        ListView MemeListView = (ListView) findViewById(R.id.list);
+//
+//        // Create a new adapter that takes an empty list of earthquakes as input
+//        mAdapter = new MemeAdapter(this, new ArrayList<Meme>());
+//
+//        // Set the adapter on the {@link ListView}
+//        // so the list can be populated in the user interface
+//        MemeListView.setAdapter(mAdapter);
+//
+//        // Get a reference to the LoaderManager, in order to interact with loaders.
+//        LoaderManager loaderManager = getLoaderManager();
+//
+//        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+//        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+//        // because this activity implements the LoaderCallbacks interface).
+//        loaderManager.initLoader(MEME_LOADER_ID, null, this);
     }
 
     @NonNull

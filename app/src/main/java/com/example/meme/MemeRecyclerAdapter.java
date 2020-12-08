@@ -50,6 +50,7 @@ public class MemeRecyclerAdapter extends RecyclerView.Adapter<MemeRecyclerAdapte
 
     @Override
     public int getItemCount() {
+        if(memeData == null )return 0;
         return memeData.size();
     }
 
