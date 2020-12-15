@@ -18,10 +18,12 @@ public class MemeRecyclerAdapter extends RecyclerView.Adapter<MemeRecyclerAdapte
 
     Context context;
     ArrayList<Meme> memeData;
+    private OnMemeListener mOnMemeListener;
 
-    public MemeRecyclerAdapter(Context context, ArrayList<Meme> memeData) {
+    public MemeRecyclerAdapter(Context context, ArrayList<Meme> memeData , OnMemeListener onMemeListener) {
         this.context = context;
         this.memeData = memeData;
+        this.mOnMemeListener = onMemeListener;
     }
 
     @NonNull
@@ -30,7 +32,7 @@ public class MemeRecyclerAdapter extends RecyclerView.Adapter<MemeRecyclerAdapte
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item, parent, false);
 
-        return new MemeViewHolder(view);
+        return new MemeViewHolder(view , mOnMemeListener);
     }
 
     @Override
@@ -46,6 +48,15 @@ public class MemeRecyclerAdapter extends RecyclerView.Adapter<MemeRecyclerAdapte
                 .thumbnail(0.05f)
                 .placeholder(R.drawable.insta_loader)
                 .into(holder.meme_image);
+
+        //Set Likes Count
+        int Total_Likes = memeData.get(position).getmLikes();
+        holder.LikeView.setText(Total_Likes + " Likes");
+
+        //Set names of subbrediit
+        String subreddit = memeData.get(position).getmSubreddit();
+        holder.Subreddit_text.setText(subreddit);
+        holder.Subreddit_text0.setText(subreddit);
     }
 
     @Override
@@ -54,20 +65,45 @@ public class MemeRecyclerAdapter extends RecyclerView.Adapter<MemeRecyclerAdapte
         return memeData.size();
     }
 
-    public static class MemeViewHolder extends RecyclerView.ViewHolder{
+    public static class MemeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView Like_Button;
         TextView LikeView;
         ImageView postLink_Button;
-        TextView subReddit_text;
         ImageView meme_image;
+        TextView Subreddit_text;
+        TextView Subreddit_text0;
+        OnMemeListener onMemeListener;
 
-        public MemeViewHolder(@NonNull View itemView) {
+        public MemeViewHolder(@NonNull View itemView , OnMemeListener onMemeListener ) {
             super(itemView);
             Like_Button = itemView.findViewById(R.id.Like_Button);
             LikeView= itemView.findViewById(R.id.likes_no);
             postLink_Button = itemView.findViewById(R.id.postlink_button);
-            subReddit_text = itemView.findViewById(R.id.subreddit);
             meme_image = itemView.findViewById(R.id.MemeImage);
+            Subreddit_text = itemView.findViewById(R.id.subreddit);
+            Subreddit_text0 = itemView.findViewById(R.id.subreddit0);
+            this.onMemeListener = onMemeListener;
+
+            //Set Onclicklistiner for Browser Intent
+            postLink_Button.setOnClickListener(this);
+
+            //Set Onclicklistiner for Like_Button
+            Like_Button.setOnClickListener(this);
+
         }
+
+        @Override
+        public void onClick(View v) {
+            if ( v.getId() == R.id.postlink_button ) {
+                onMemeListener.onPostLinkButtonClick(getAdapterPosition());
+            }else if( v.getId() == R.id.Like_Button ) {
+                onMemeListener.onLikeButtonCLick(getAdapterPosition(), v);
+            }
+        }
+    }
+
+    public interface OnMemeListener {
+        void onPostLinkButtonClick( int position );
+        void onLikeButtonCLick( int position  , View view);
     }
 }

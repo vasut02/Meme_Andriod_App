@@ -1,19 +1,20 @@
 package com.example.meme;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Loader;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -27,9 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<Meme>> {
+public class MainActivity extends AppCompatActivity implements MemeRecyclerAdapter.OnMemeListener {
+
 
     /**
      * Constant value for the earthquake loader ID. We can choose any integer.
@@ -37,12 +38,14 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
      */
     private static final int MEME_LOADER_ID = 1;
 
-    private static final String MEME_REQUEST_URL =
+    private static final String MEME_AUTHORITY = "meme-api.herokuapp.com";
+    private static final String TAG = "MainActivity" ;
+    private static String MEME_REQUEST_URL =
             "https://meme-api.herokuapp.com/gimme/15";
-    /**
-     * Adapter for the list of Meme
-     */
-    private MemeAdapter mAdapter;
+
+    private static final String MEME_DEFAULT_REQUEST_URL =
+            "https://meme-api.herokuapp.com/gimme/15";
+
 
     private MemeRecyclerAdapter adapter;
     private ArrayList<Meme> MemeData;
@@ -51,7 +54,13 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.recycler_view_file);
+        setContentView(R.layout.activity_main);
+
+        if(getIntent() != null ){
+            MEME_REQUEST_URL = handleIntent(getIntent());
+        }else {
+            MEME_REQUEST_URL = MEME_DEFAULT_REQUEST_URL;
+        }
 
         //Code For Version 2
         StringRequest memeRequest = new StringRequest(MEME_REQUEST_URL, new Response.Listener<String>() {
@@ -67,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
                 RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view );
 
                 //initiate adapter
-                adapter = new MemeRecyclerAdapter(MainActivity.this , MemeData);
+                adapter = new MemeRecyclerAdapter(MainActivity.this , MemeData , MainActivity.this) ;
 
                 recyclerView.setHasFixedSize(true);
 
@@ -88,62 +97,11 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(memeRequest);
 
-//        ArrayList<Meme> MemeData = extractFeatureFromJson(JSONString);
-//        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view );
-//        MemeRecyclerAdapter adapter = new MemeRecyclerAdapter(this , MemeData);
-//        recyclerView.setHasFixedSize(true);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setAdapter(adapter);
-
-//        // Find a reference to the {@link ListView} in the layout
-//        ListView MemeListView = (ListView) findViewById(R.id.list);
-//
-//        // Create a new adapter that takes an empty list of earthquakes as input
-//        mAdapter = new MemeAdapter(this, new ArrayList<Meme>());
-//
-//        // Set the adapter on the {@link ListView}
-//        // so the list can be populated in the user interface
-//        MemeListView.setAdapter(mAdapter);
-//
-//        // Get a reference to the LoaderManager, in order to interact with loaders.
-//        LoaderManager loaderManager = getLoaderManager();
-//
-//        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-//        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-//        // because this activity implements the LoaderCallbacks interface).
-//        loaderManager.initLoader(MEME_LOADER_ID, null, this);
-    }
-
-    @NonNull
-    @Override
-    public Loader<List<Meme>> onCreateLoader(int id, @Nullable Bundle args) {
-        // Create a new loader for the given URL
-        return new MemeLoader(this, MEME_REQUEST_URL);
 
     }
 
-    @Override
-    public void onLoadFinished(android.content.Loader<List<Meme>> loader, List<Meme> Memes) {
-        // Clear the adapter of previous earthquake data
-        mAdapter.clear();
 
-        // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
-        // data set. This will trigger the ListView to update.
-        if (Memes != null && !Memes.isEmpty()) {
-            mAdapter.addAll(Memes);
-        }
-    }
 
-    @Override
-    public void onLoaderReset(android.content.Loader<List<Meme>> loader) {
-        // Loader reset, so we can clear out our existing data.
-        mAdapter.clear();
-    }
-
-    /**
-     * Return a list of {@link Meme} objects that has been built up from
-     * parsing a JSON response.
-     */
     public static ArrayList<Meme> extractFeatureFromJson(String MemeJSON) {
 
         Log.e("QueryUtils",""+MemeJSON);
@@ -194,5 +152,61 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         // Return the list of earthquakes
         return Memes;
     }
+
+    @Override
+    public void onPostLinkButtonClick(int position) {
+        String post_url = MemeData.get(position).getmPostLink();
+        // Convert the String URL into a URI object (to pass into the Intent constructor)
+        Uri meme_Uri = Uri.parse(post_url);
+
+        // Create a new intent to view the earthquake URI
+        Intent websiteIntent = new Intent(Intent.ACTION_VIEW, meme_Uri);
+
+        // Send the intent to launch a new activity
+        startActivity(websiteIntent);
+    }
+
+    @Override
+    public void onLikeButtonCLick(int position , View view) {
+        ImageView Like_Button = (ImageView) view;
+        Like_Button.setImageResource(R.drawable.outline_favorite_24);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        }
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.meme_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
+    }
+
+    private String handleIntent(Intent intent) {
+        String myUrl = MEME_DEFAULT_REQUEST_URL;
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            //use the query to search your data somehow
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("https")
+                    .authority(MEME_AUTHORITY)
+                    .appendPath("gimme")
+                    .appendPath(query)
+                    .appendPath("4");
+             myUrl = builder.build().toString();
+        }
+        Log.d(TAG, "handleIntent: " + myUrl);
+        return myUrl;
+    }
+
 
 }
